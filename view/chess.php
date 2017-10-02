@@ -1,2 +1,5 @@
-<?php include ('templates/header.php')?>
-<?php include ('templates/footer.php')?>
+<?php include'templates/no_header.php';?>
+<bady>
+    
+</bady>
+<?php include 'templates/no_footer.php';?>

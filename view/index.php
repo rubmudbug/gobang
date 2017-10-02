@@ -1,9 +1,8 @@
-<?php include ('templates/header.php');?>
+
+
+
+<?php if($_SERVER['PHP_SELF']=='/gobang/view/index.php'){echo "class=\"active\"";}?>
 
 
 
 
-
-
-
-<?php include ('templates/footer.php');?>

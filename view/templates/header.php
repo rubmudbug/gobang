@@ -33,10 +33,10 @@
         </div>
         <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#">主页</a></li>
-                <li><a href="#about">游戏大厅</a></li>
-                <li><a href="#contact">登录</a></li>
-                <li><a href="#contact">注册</a></li>
+                <li><a href="index.php">主页</a></li>
+                <li><a href="home.php">游戏大厅</a></li>
+                <li><a href="log.php">登录</a></li>
+                <li><a href="register.php">注册</a></li>
             </ul>
         </div>
     </div>
