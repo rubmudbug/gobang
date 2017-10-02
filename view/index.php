@@ -1,7 +1,9 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: Cybertron
- * Date: 2017/10/2
- * Time: 14:00
- */
+<?php include ('templates/header.php');?>
+
+
+
+
+
+
+
+<?php include ('templates/footer.php');?>
