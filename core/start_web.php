@@ -19,18 +19,21 @@ use \Workerman\Autoloader;
 
 
 // 自动加载类
-require_once __DIR__ . '/../externallibraries/autoload.php';
+require_once dirname(__DIR__).'/externallibraries/autoload.php';
 
 // WebServer
 $web = new WebServer("http://0.0.0.0:55151");
 // WebServer数量
 $web->count = 2;
 // 设置站点根目录
-$web->addRoot('www.your_domain.com', __DIR__.'../view/chess.php');
 
+$web->addRoot('www.your_domain.com', dirname(__DIR__).'/view/');
+echo serverRoot[$domain];
+echo dirname(__DIR__).'/view/';
 // 如果不是在根目录启动，则运行runAll方法
 if(!defined('GLOBAL_START'))
 {
+    echo "不在根目录启动";
     Worker::runAll();
 }
 

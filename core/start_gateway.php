@@ -16,7 +16,7 @@ use \GatewayWorker\Gateway;
 use \Workerman\Autoloader;
 
 // 自动加载类
-require_once __DIR__ . '../externallibraries/autoload.php';
+require_once dirname(__DIR__).'/externallibraries/autoload.php';
 
 // gateway 进程
 $gateway = new Gateway("Websocket://0.0.0.0:7272");

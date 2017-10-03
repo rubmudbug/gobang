@@ -94,7 +94,7 @@ function connect() {
     // 当socket连接打开时，输入用户名
     ws.onopen = onopen;
     // 当有消息时根据消息类型显示不同信息
-    ws.onmessage = onmessage();
+    ws.onmessage = onmessage;
     ws.onclose = function() {
         console.log("连接关闭，定时重连");
         connect();

@@ -16,7 +16,7 @@ use \GatewayWorker\BusinessWorker;
 use \Workerman\Autoloader;
 
 // 自动加载类
-require_once __DIR__ . '../externallibraries/autoload.php';
+require_once dirname(__DIR__).'/externallibraries/autoload.php';
 
 // bussinessWorker 进程
 $worker = new BusinessWorker();

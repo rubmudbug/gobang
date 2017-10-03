@@ -24,7 +24,7 @@
  * 主要是处理 onMessage onClose 
  */
 use \GatewayWorker\Lib\Gateway;
-include __DIR__ . '../externallibraries/autoload.php';
+include dirname(__DIR__).'/externallibraries/autoload.php';
 
 class Events
 {
