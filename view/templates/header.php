@@ -35,8 +35,6 @@
             <ul class="nav navbar-nav">
                 <li><a href="index.php">主页</a></li>
                 <li><a href="home.php">游戏大厅</a></li>
-                <li><a href="log.php">登录</a></li>
-                <li><a href="register.php">注册</a></li>
             </ul>
         </div>
     </div>
