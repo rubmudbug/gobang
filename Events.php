@@ -59,18 +59,18 @@ class Events
                // system("pause");
               //  $_SESSION['room_id'] = $room_id;
                 Gateway::updateSession($client_id, array('client'=>$client_name));
+                break;
             case 'update':
                 if(!isset($message_data['update']))
                 {
                     throw new \Exception("\$message_data['update'] none. client_ip:{$_SERVER['REMOTE_ADDR']} \$message:$message");
                 }
-                $date=$message_data['update'];
-                if(is_string($message_data['update'])){
-                    $message_data['update']=($message_data['update']);
+                $data=$message_data['update'];
+                if(is_string($data)){
+                    $data=(int)$data;
                 }
-                $date=$message_data['update'];
-                $cx=floor($date/100);
-                $cy=$date-($cx*100);
+                $cx=floor($data/100);
+                $cy=$data-($cx*100);
                 echo "这x:",$cx,"这是y:",$cy;
                 break;
         }
