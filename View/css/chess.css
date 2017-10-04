@@ -8,7 +8,15 @@ body{
     background-size: cover;
 }
 .cent{
+    float: left;
     width: 808px;
-    margin: 0 auto;
+    margin-top: 20px;
+    margin-left: 20px;
+}
+.userlist{
+    float: right;
+    margin-top: 20px;
+    margin-right: 250px;
+    width: 300px;
 }
 

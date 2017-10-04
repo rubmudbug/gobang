@@ -53,18 +53,37 @@ class Events
                 return;
             // 客户端登录 message格式: {type:login, name:xx, room_id:1} ，添加到客户端，广播给所有客户端xx进入聊天室
             case 'login':
+                if(!isset($message_data['room_id']))
+                {
+                    throw new \Exception("\$message_data['room_id'] not set. client_ip:{$_SERVER['REMOTE_ADDR']} \$message:$message");
+                }
+                $room_id = $message_data['room_id'];
+                $client_name = htmlspecialchars($message_data['client_name']);
+                $_SESSION['room_id'] = $room_id;
+                $_SESSION['client_name'] = $client_name;
                 $client_name = htmlspecialchars($message_data['client_name']);
                 echo '输出';
                 echo $client_name;
-               // system("pause");
-              //  $_SESSION['room_id'] = $room_id;
-                Gateway::updateSession($client_id, array('client'=>$client_name));
+                $clients_list = Gateway::getClientSessionsByGroup($room_id);
+                foreach($clients_list as $tmp_client_id=>$item)
+                {
+                    $clients_list[$tmp_client_id] = $item['client_name'];
+                }
+                $clients_list[$client_id] = $client_name;
+                $clients_list = Gateway::getClientSessionsByGroup($room_id);
+                foreach($clients_list as $tmp_client_id=>$item)
+                {
+                    $clients_list[$tmp_client_id] = $item['client_name'];
+                }
+                $clients_list[$client_id] = $client_name;
                 break;
             case 'update':
-                if(!isset($message_data['update']))
+                if(!isset($_SESSION['room_id']))
                 {
-                    throw new \Exception("\$message_data['update'] none. client_ip:{$_SERVER['REMOTE_ADDR']} \$message:$message");
+                    throw new \Exception("\$_SESSION['room_id'] not set. client_ip:{$_SERVER['REMOTE_ADDR']}");
                 }
+                $room_id = $_SESSION['room_id'];
+                $client_name = $_SESSION['client_name'];
                 $data=$message_data['update'];
                 if(is_string($data)){
                     $data=(int)$data;
@@ -72,6 +91,19 @@ class Events
                 $cx=floor($data/100);
                 $cy=$data-($cx*100);
                 echo "这x:",$cx,"这是y:",$cy;
+                if(getClientCountByGroup($room_id)==2)
+                {
+                    $new_message = array(
+                        'type'=>'updata',
+                        'from_client_id'=>$client_id,
+                        'from_client_name' =>$client_name,
+                        'to_client_id'=>$message_data['to_client_id'],
+                         "data"=>$data,
+                        'time'=>date('Y-m-d H:i:s'),
+                    );
+                    Gateway::sendToClient($message_data['to_client_id'], json_encode($new_message));
+                    return;
+                }
                 break;
         }
    }

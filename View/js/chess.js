@@ -2,7 +2,7 @@ var ws, name, client_list={},chess_list={},img,ctx,canvas;
 canvas = document.getElementById('canvas');
 var isWhite = true; //设置是否该轮到白棋，黑棋先手
 var winner = ''; //赢家初始化为空
-var step=225;//总步数
+var step=0;//总步数
 var chessData = new Array(15); //二维数组存储棋盘落子信息,初始化数组chessData值为0即此处没有棋子，1为白棋，2为黑棋
 for (var x = 0; x < 15; x++) {
     chessData[x] = new Array(15);
@@ -10,7 +10,7 @@ for (var x = 0; x < 15; x++) {
         chessData[x][y] = 0;
     }
 }
-ws = new WebSocket("ws://"+document.domain+":7272");
+
 //js入口
 function onLoad_d(){
     connect();
@@ -48,8 +48,14 @@ function onclick(event) {
     var x;
     var y;
     //四舍五入取正增大点击面积
-    if(x!=0){x=Math.round(px/49);}
-    if(y!=0){y=Math.round(py/48);}
+    if(x>0){x=Math.round(px/49);}
+    else {
+        x=0;
+    }
+    if(y>0){y=Math.round(py/48);}
+    else {
+        y=0;
+    }
     console.log(x);
     console.log(y);
     // if (px < 0 || py < 0 || x > 14 || y > 14 || chessData[x][y] != 0) { //鼠标点击棋盘外的区域不响应
@@ -57,8 +63,6 @@ function onclick(event) {
     // }
     dochess(x,y);
 }
-//加入监听
-//canvas.addEventListener('click', click);
 function chess(color, x, y) {
     ctx.fillStyle = color; //绘制棋子
     ctx.beginPath();
@@ -82,14 +86,17 @@ function dochess(x,y) {
         if(isWhite ){
             chess("white",x,y);
             //x*100+y
-            var date=x*100+y;
-            ws.send('{"type":"update","data":"'+date+'"}');
-            console.log()
+            var data=x*100+y;
+            var jsonData='{"type":"update","data":"'+data+'"}'
+            ws.send(jsonData);
+            console.log(data)
             isWhite=false;
         }else {
             chess("black",x,y);
-            var date=x*100+y;
-            ws.send('{"type":"update","data":"'+date+'"}');
+            var data=x*100+y;
+            var jsonData='{"type":"update","data":"'+data+'"}'
+            ws.send(jsonData);
+            console.log(data)
             isWhite=true;
         }
     }else {
@@ -123,7 +130,7 @@ function onopen() {
     }
     // 登录
     var login_data = '{"type":"login","client_name":"' + name.replace(/"/g, '\\"') + '"}';
-    console.log("websocket握手成功，发送登录数据:" + login_data);
+    console.log("websocket握手成功，发送登录数据:" +login_data);
     ws.send(login_data);
 
 }
@@ -140,10 +147,10 @@ function onmessage(e)
             break;
             //更新对方棋子位置
             //数据保存格式是1000 前两位x 后两位y 10*100=1000; 7+1000=1007;
-
-        case 'update':
-            if(!data['update']){
-                console.log("服务器没有返回x");
+       // case 'log'
+        case 'updata':
+            if(!data['updata']){
+                console.log("服务器没有返回");
                 ws.send('{"type":"request_again"}');
                 return;
             }else {
@@ -153,7 +160,6 @@ function onmessage(e)
                 dochess(cx,cy);
             }
             break;
-
     }
 }
 
