@@ -1,8 +1,8 @@
-var ws, name, client_list={},chess_list={},img,ctx,canvas;
+var ws, name,img,ctx,canvas;
 canvas = document.getElementById('canvas');
 var isWhite = true; //设置是否该轮到白棋，黑棋先手
 var winner = ''; //赢家初始化为空
-var step=0;//总步数
+//var step=0;//总步数
 var chessData = new Array(15); //二维数组存储棋盘落子信息,初始化数组chessData值为0即此处没有棋子，1为白棋，2为黑棋
 for (var x = 0; x < 15; x++) {
     chessData[x] = new Array(15);
@@ -13,9 +13,11 @@ for (var x = 0; x < 15; x++) {
 
 //js入口
 function onLoad_d(){
-    connect();
     loadChessMap();
+    connect();
+
 }
+//加载地图
 function loadChessMap() {
     //用图片做棋盘在放缩后图片会失真
     img = new Image();
@@ -27,7 +29,6 @@ function loadChessMap() {
         img.style.display = 'none';
     };
     canvas.addEventListener('click',onclick);
-    onclick();
 }
 //将窗口坐标转成canvas坐标
 function windowTocanvas(canvas, x, y) {
@@ -37,7 +38,7 @@ function windowTocanvas(canvas, x, y) {
         y: y - bbox.top * (canvas.height / bbox.height)
     };
 }
-//没有对重复落子进行检查
+//鼠标点击
 function onclick(event) {
     var e = event ? event : window.event;
     var loc=windowTocanvas(canvas,e.clientX,e.clientY);
@@ -48,11 +49,11 @@ function onclick(event) {
     var x;
     var y;
     //四舍五入取正增大点击面积
-    if(x>0){x=Math.round(px/49);}
+    if(px>0){x=Math.round(px/49);}
     else {
         x=0;
     }
-    if(y>0){y=Math.round(py/48);}
+    if(py>0){y=Math.round(py/48);}
     else {
         y=0;
     }
@@ -63,13 +64,15 @@ function onclick(event) {
     // }
     dochess(x,y);
 }
+//画出棋子
 function chess(color, x, y) {
     ctx.fillStyle = color; //绘制棋子
     ctx.beginPath();
     ctx.arc(x * 50 + 48, y * 50 + 40, 15, 0, Math.PI * 2, true);
     ctx.closePath();
     ctx.fill();
-    if (color == "white") {
+
+    if (color == 'white') {
         console.log("电脑在" + x + "," + y + "画了个白棋");
         chessData[x][y] = 1;
     } else {
@@ -77,6 +80,7 @@ function chess(color, x, y) {
         chessData[x][y] = 2;
     }
 }
+//下棋
 function dochess(x,y) {
     if(isNaN(x)||isNaN(y))
     {
@@ -86,7 +90,7 @@ function dochess(x,y) {
         if(isWhite ){
             chess("white",x,y);
             //x*100+y
-            var data=x*100+y;
+            var data=(x*100)+y;
             var jsonData='{"type":"update","data":"'+data+'"}'
             ws.send(jsonData);
             console.log(data)
@@ -96,7 +100,7 @@ function dochess(x,y) {
             var data=x*100+y;
             var jsonData='{"type":"update","data":"'+data+'"}'
             ws.send(jsonData);
-            console.log(data)
+            console.log(data);
             isWhite=true;
         }
     }else {
@@ -130,7 +134,7 @@ function onopen() {
     }
     // 登录
     var login_data = '{"type":"login","client_name":"' + name.replace(/"/g, '\\"') + '"}';
-    console.log("websocket握手成功，发送登录数据:" +login_data);
+    console.log("websocket开始握手,并且向服务器发送握手请求,发送登录数据:" +login_data);
     ws.send(login_data);
 
 }

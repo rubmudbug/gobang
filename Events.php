@@ -28,12 +28,7 @@ require_once __DIR__.'/externallibraries/autoload.php';
 
 class Events
 {
-   /**
-    * 有消息时
-    * @param int $client_id
-    * @param mixed $message
-    */
-   public static function onMessage($client_id, $message)
+   public function onMessage($client_id, $message)
    {
         // debug
         echo "client:{$_SERVER['REMOTE_ADDR']}:{$_SERVER['REMOTE_PORT']} gateway:{$_SERVER['GATEWAY_ADDR']}:{$_SERVER['GATEWAY_PORT']}  client_id:$client_id session:".json_encode($_SESSION)." onMessage:".$message."\n";
@@ -53,31 +48,44 @@ class Events
                 return;
             // 客户端登录 message格式: {type:login, name:xx, room_id:1} ，添加到客户端，广播给所有客户端xx进入聊天室
             case 'login':
+                // 判断是否有房间号
                 if(!isset($message_data['room_id']))
                 {
                     throw new \Exception("\$message_data['room_id'] not set. client_ip:{$_SERVER['REMOTE_ADDR']} \$message:$message");
                 }
+
+                // 把房间号昵称放到session中
                 $room_id = $message_data['room_id'];
+                //把预定义的字符 "<" （小于）和 ">" （大于）转换为 HTML 实体：
                 $client_name = htmlspecialchars($message_data['client_name']);
                 $_SESSION['room_id'] = $room_id;
                 $_SESSION['client_name'] = $client_name;
-                $client_name = htmlspecialchars($message_data['client_name']);
-                echo '输出';
-                echo $client_name;
-                $clients_list = Gateway::getClientSessionsByGroup($room_id);
-                foreach($clients_list as $tmp_client_id=>$item)
-                {
-                    $clients_list[$tmp_client_id] = $item['client_name'];
+
+                // 获取房间内所有用户数据
+//                $clients_list = Gateway::getClientSessionsByGroup($room_id);
+//                foreach($clients_list as $tmp_client_id=>$item)
+//                {
+//                    $clients_list[$tmp_client_id] = $item['client_name'];
+//                }
+//                $clients_list[$client_id] = $client_name;
+                //将两个用户加入分组
+                if(getClientCountByGroup($message_data['room_id'])<3){
+                    Gateway::joinGroup($client_id, $message_data['room_id']);
+
+                }else{
+                    $tmp_warn_message=array(
+                        'type'=>"warning",
+                        'client_id'=>$client_id,
+                        'room_id'=>$message_data['room_id'],
+                        //能不能玩,不能玩就观战
+                        'canNoPlay'=>false,
+                    );
+                    Gateway::sendToCurrentClient(json_encode($tmp_warn_message));
                 }
-                $clients_list[$client_id] = $client_name;
-                $clients_list = Gateway::getClientSessionsByGroup($room_id);
-                foreach($clients_list as $tmp_client_id=>$item)
-                {
-                    $clients_list[$tmp_client_id] = $item['client_name'];
-                }
-                $clients_list[$client_id] = $client_name;
+
                 break;
             case 'update':
+                //var_dump(\'hello,wol');
                 if(!isset($_SESSION['room_id']))
                 {
                     throw new \Exception("\$_SESSION['room_id'] not set. client_ip:{$_SERVER['REMOTE_ADDR']}");
@@ -124,5 +132,13 @@ class Events
            Gateway::sendToGroup($room_id, json_encode($new_message));
        }
    }
+
+
+    public static function onWorkerStop($businessWorker)
+    {
+        error_log('workerman 中途停止,不是系统错误,查看逻辑错误',3,'/erro.log');
+    }
+
+
   
 }
