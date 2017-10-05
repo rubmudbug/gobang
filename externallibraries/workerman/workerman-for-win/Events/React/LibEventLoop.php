@@ -16,7 +16,7 @@ use Workerman\Events\EventInterface;
 
 /**
  * Class LibEventLoop
- * @package Workerman\Events\React
+ * @package Workerman\GoBang\React
  */
 class LibEventLoop extends \React\EventLoop\LibEventLoop
 {

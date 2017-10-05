@@ -16,7 +16,7 @@ use Workerman\Events\EventInterface;
 
 /**
  * Class ExtEventLoop
- * @package Workerman\Events\React
+ * @package Workerman\GoBang\React
  */
 class ExtEventLoop extends \React\EventLoop\ExtEventLoop
 {
