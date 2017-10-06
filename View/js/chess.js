@@ -56,11 +56,6 @@ function onclick(event) {
     else {
         y=0;
     }
-    console.log(x);
-    console.log(y);
-    // if (px < 0 || py < 0 || x > 14 || y > 14 || chessData[x][y] != 0) { //鼠标点击棋盘外的区域不响应
-    //     return;
-    // }
     dochess(x,y);
 }
 //画出棋子
@@ -106,6 +101,22 @@ function dochess(x,y) {
       console.log("当前位置存在棋子");
     }
 }
+var $_GET = (function(){
+    var url = window.document.location.href.toString();
+    var u = url.split("?");
+    if(typeof(u[1]) == "string"){
+        u = u[1].split("&");
+        var get = {};
+        for(var i in u){
+            var j = u[i].split("=");
+            get[j[0]] = j[1];
+        }
+        return get;
+    } else {
+        return {};
+    }
+})();
+
 // 连接服务端
 function connect() {
     // 创建websocket
@@ -132,7 +143,7 @@ function onopen() {
         }
     }
     // 登录
-    var login_data = '{"type":"login","client_name":"'+name.replace(/"/g, '\\"')+'","room_id":"1"}';
+    var login_data = '{"type":"login","client_name":"'+name.replace(/"/g, '\\"')+'","room_id":"'+$_GET["room_id"]+'"}';
     console.log("websocket开始握手,并且向服务器发送握手请求,发送登录数据:" +login_data);
     ws.send(login_data);
 
@@ -153,18 +164,7 @@ function onmessage(e)
             //数据保存格式是1000 前两位x 后两位y 10*100=1000; 7+1000=1007;
        // case 'log'
         case 'login':
-            //{"type":"login","client_id":xxx,"client_name":"xxx","client_list":"[...]"}
-            // if(data['client_list'])
-            // {
-            //     client_list = data['client_list'];
-            // }
-            // else
-            // {
-            //     client_list[data['client_id']] = data['client_name'];
-            // }
-            // flush_client_list();
-            // console.log(data['client_name']+"登录成功");
-            // break;
+
         case 'updata':
             //{"type":"updata","client_id":xxx,"color":"white|black" "client_name":"xxx","X"="cx","Y"="cy"}
                 var X =data['X'];

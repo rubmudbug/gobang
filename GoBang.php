@@ -47,34 +47,28 @@ class GoBang
                 return;
             // 客户端登录 message格式: {type:login, name:xx, room_id:1} ，添加到客户端，广播给所有客户端xx进入聊天室
             case 'login':
-                //判断是否有房间号
-//                if(!isset($message_data['room_id']))
-//                {
-//                    throw new \Exception("\$message_data['room_id'] not set. client_ip:{$_SERVER['REMOTE_ADDR']} \$message:$message");
-//                    $_SESSION['room_id']=$_GET['room_id'];
-//                }else{
+               // 判断是否有房间号
+                if(!isset($message_data['room_id']))
+                {
+                    throw new \Exception("\$message_data['room_id'] not set. client_ip:{$_SERVER['REMOTE_ADDR']} \$message:$message");
+                } else{
                     $room_id = $message_data['room_id'];
                     $_SESSION['room_id'] = $room_id;
-//                }
+                }
                     $client_name = htmlspecialchars($message_data['client_name']);
                     $_SESSION['client_name'] = $client_name;
                     Gateway::joinGroup($client_id,$room_id);
                 // 获取房间内所有用户列表
-//                $clients_list = Gateway::getClientSessionsByGroup($room_id);
-//                foreach($clients_list as $tmp_client_id=>$item)
-//                {
-//                    $clients_list[$tmp_client_id] = $item['client_name'];
-//                }
-//                $clients_list[$client_id] = $client_name;
-//
-//                // 转播给当前房间的所有客户端，xx进入聊天室 message {type:login, client_id:xx, name:xx}
-//                $new_message = array('type'=>$message_data['type'], 'client_id'=>$client_id, 'client_name'=>htmlspecialchars($client_name));
-//                //Gateway::sendToGroup($room_id, json_encode($new_message));
-//               // Gateway::joinGroup($client_id, $room_id);
-//
-//                // 给当前用户发送用户列表
-//                $new_message['client_list'] = $clients_list;
-//                Gateway::sendToCurrentClient(json_encode($new_message));
+                $clients_list = Gateway::getClientSessionsByGroup($room_id);
+                foreach($clients_list as $tmp_client_id=>$item)
+                {
+                    $clients_list[$tmp_client_id] = $item['client_name'];
+                }
+                $clients_list[$client_id] = $client_name;
+
+                // 给当前用户发送用户列表
+                $new_message['client_list'] = $clients_list;
+                Gateway::sendToCurrentClient(json_encode($new_message));
                 return;
             case 'update':
                 //{"type":"updata","client_id":xxx,"client_name":"xxx","X"="cx","Y"="cy"}
@@ -98,7 +92,7 @@ class GoBang
                         'X'=>$X,
                         'Y'=>$Y
                    );
-                  Gateway::sendToGroup(json_encode($new_message));
+                  Gateway::sendToGroup($_SESSION["room_id"],json_encode($new_message));
                   return;
                 //
                // }
